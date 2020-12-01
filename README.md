@@ -1,4 +1,4 @@
-## TopicClassifier
+## DescriptionSimilarity
 
 ## Overview
 
@@ -43,7 +43,7 @@ used for Natural Language Processing.
     ```
         pip3 install -r requirements.txt
     ```
-  * Then please run the following command in the terminal.
+    Then please run the following command in the terminal.
     ```
         python3 -m spacy download en_core_web_sm
     ```
