@@ -26,25 +26,25 @@ class DescriptionSimilarity:
         input_df = pd.read_excel(INPUT_EXCEL_PATH)
         risk_descriptions = input_df["Risk Description"].values.tolist()
         control_descriptions = input_df["Control Description"].values.tolist()
+        control_features = []
+        for c_des in control_descriptions:
+            try:
+                c_des_feature = self.feature_extractor.get_feature_token_words(text=c_des)
+            except Exception as e:
+                c_des_feature = None
+                log_print(e)
+            control_features.append(c_des_feature)
 
-        for i, c_i_des in enumerate(control_descriptions):
+        for i, c_i_feature in enumerate(control_features):
             st_time = time.time()
             i_similarity = []
-            try:
-                c_i_des_feature = self.feature_extractor.get_feature_token_words(text=c_i_des)
-            except Exception as e:
-                log_print(e)
-                continue
-            for j, c_j_des in enumerate(control_descriptions):
-                if j == i:
-                    continue
-                try:
-                    c_j_des_feature = self.feature_extractor.get_feature_token_words(text=c_j_des)
-                    i_j_similarity = cosine_similarity([c_i_des_feature], [c_j_des_feature])
+            if c_i_feature is not None:
+                for j, c_j_feature in enumerate(control_features):
+                    if j == i or c_j_feature is None:
+                        continue
+                    i_j_similarity = cosine_similarity([c_i_feature], [c_j_feature])
                     if i_j_similarity[0][0] >= SIMILARITY_THRESH:
                         i_similarity.append([j, i_j_similarity[0][0]])
-                except Exception as e:
-                    log_print(e)
 
             if not i_similarity:
                 control_similarities.append("NA")
@@ -60,7 +60,7 @@ class DescriptionSimilarity:
                 init_rations = ""
                 for m, s_index in enumerate(similarity_indices):
                     init_controls += control_descriptions[s_index] + ","
-                    init_risks += risk_descriptions[s_index] + ","
+                    init_risks += str(risk_descriptions[s_index]) + ","
                     init_values += str(sorted_similarity[m][1]) + ","
                     if sorted_similarity[m][1] >= 0.75:
                         init_rations += "high" + ","
