@@ -1,5 +1,5 @@
 import os
-import time
+# import time
 import pandas as pd
 import ntpath
 import numpy as np
@@ -36,7 +36,7 @@ class DescriptionSimilarity:
             control_features.append(c_des_feature)
 
         for i, c_i_feature in enumerate(control_features):
-            st_time = time.time()
+            # st_time = time.time()
             i_similarity = []
             if c_i_feature is not None:
                 for j, c_j_feature in enumerate(control_features):
@@ -74,7 +74,7 @@ class DescriptionSimilarity:
                 similarity_rations.append(init_rations[:-1])
 
             print(f"Processed Control Description {i + 1} rows")
-            print(time.time() - st_time)
+            # print(time.time() - st_time)
 
         input_df["Similar Sentences"] = control_similarities
         input_df["Risk Sentences"] = risk_similarities
