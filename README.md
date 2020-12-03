@@ -42,10 +42,8 @@ used for Natural Language Processing.
     Please go ahead to this project directory and run the following commands in the terminal
     ```
         pip3 install -r requirements.txt
-    ```
-    Then please run the following command in the terminal.
-    ```
         python3 -m spacy download en_core_web_sm
+        python3 -m nltk.downloader all
     ```
 
 - Please create the "model" folder in the "utils" folder of this project directory and copy the model into the "model" folder

@@ -10,4 +10,4 @@ OUTPUT_DIR = make_directory_if_not_exists(os.path.join(CUR_DIR, 'output'))
 
 INPUT_EXCEL_PATH = ""
 SIMILARITY_THRESH = 0.3
-SIMILARITY_NUMBER = 3
+SIMILARITY_NUMBER = 1

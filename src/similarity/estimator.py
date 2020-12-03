@@ -1,5 +1,4 @@
 import os
-# import time
 import pandas as pd
 import ntpath
 import numpy as np
@@ -17,8 +16,10 @@ class DescriptionSimilarity:
     def run(self):
         control_similarities = []
         risk_similarities = []
-        similarity_values = []
+        control_similarity_values = []
         similarity_rations = []
+        risk_similarity_values = []
+        avg_similarity_values = []
 
         file_name = ntpath.basename(INPUT_EXCEL_PATH).replace(".xlsx", "")
         output_file_path = os.path.join(OUTPUT_DIR, f"{file_name}_result.csv")
@@ -36,7 +37,6 @@ class DescriptionSimilarity:
             control_features.append(c_des_feature)
 
         for i, c_i_feature in enumerate(control_features):
-            # st_time = time.time()
             i_similarity = []
             if c_i_feature is not None:
                 for j, c_j_feature in enumerate(control_features):
@@ -49,19 +49,29 @@ class DescriptionSimilarity:
             if not i_similarity:
                 control_similarities.append("NA")
                 risk_similarities.append("NA")
-                similarity_values.append("NA")
+                control_similarity_values.append("NA")
                 similarity_rations.append("NA")
+                risk_similarity_values.append("NA")
+                avg_similarity_values.append("NA")
             else:
                 sorted_similarity = sorted(i_similarity, key=lambda k: k[1], reverse=True)[:SIMILARITY_NUMBER]
                 similarity_indices = np.array(sorted_similarity)[:, 0].astype(np.int)
                 init_controls = ""
                 init_risks = ""
-                init_values = ""
+                init_control_scores = ""
                 init_rations = ""
+                init_risk_scores = ""
+                init_avg_scores = ""
                 for m, s_index in enumerate(similarity_indices):
+                    risk_des_feature = self.feature_extractor.get_feature_token_words(text=risk_descriptions[i])
+                    risk_similar_feature = \
+                        self.feature_extractor.get_feature_token_words(text=risk_descriptions[s_index])
+                    risk_similarity = cosine_similarity([risk_des_feature], [risk_similar_feature])
                     init_controls += control_descriptions[s_index] + ","
                     init_risks += str(risk_descriptions[s_index]) + ","
-                    init_values += str(sorted_similarity[m][1]) + ","
+                    init_control_scores += str(sorted_similarity[m][1]) + ","
+                    init_risk_scores += str(risk_similarity[0][0]) + ","
+                    init_avg_scores += str(0.5 * (risk_similarity[0][0] + sorted_similarity[m][1])) + ","
                     if sorted_similarity[m][1] >= 0.75:
                         init_rations += "high" + ","
                     elif 0.5 < sorted_similarity[m][1] < 0.75:
@@ -70,16 +80,19 @@ class DescriptionSimilarity:
                         init_rations += "low" + ","
                 control_similarities.append(init_controls[:-1])
                 risk_similarities.append(init_risks[:-1])
-                similarity_values.append(init_values[:-1])
+                control_similarity_values.append(init_control_scores[:-1])
                 similarity_rations.append(init_rations[:-1])
+                risk_similarity_values.append(init_risk_scores)
+                avg_similarity_values.append(init_avg_scores)
 
             print(f"Processed Control Description {i + 1} rows")
-            # print(time.time() - st_time)
 
         input_df["Similar Sentences"] = control_similarities
         input_df["Risk Sentences"] = risk_similarities
-        input_df["Similar Values"] = similarity_values
+        input_df["Similar Values"] = control_similarity_values
         input_df["Similar Rations"] = similarity_rations
+        input_df["Risk Values"] = risk_similarity_values
+        input_df["Average Values"] = avg_similarity_values
 
         input_df.to_csv(output_file_path, index=True, header=True, mode="w")
 
