@@ -60,5 +60,3 @@ similarity threshold value, and the number of the similar sentences as you want.
     ```
 
 - The output file will be saved in the output folder.
-I can't find out you.
-Mine is live:.cid.b53291fc1c728cc6. Please contact me.
